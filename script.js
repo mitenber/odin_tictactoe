@@ -122,3 +122,52 @@ const Game = (() => {
     return { playTurn, reset, getCurrentPlayer, getPlayerX, getPlayerO }
 
 })();
+
+const DisplayController = (() => {
+    const gameboardElement = document.getElementById('gameboard');
+    const messageElement = document.getElementById('message');
+    const player1Input = document.getElementById('player1');
+    const player2Input = document.getElementById('player2');
+    const startButton = document.getElementById('start-button');
+    const restartButton = document.getElementById('reset-button');
+
+    const updateBoard = () => {
+        gameboardElement.innerHTML = '';
+        const board = Gameboard.getBoard();
+
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.index = i;
+            cell.textContent = board[i] || '';
+            cell.addEventListener('click', () => Game.playTurn(i));
+            gameboardElement.appendChild(cell);
+        }
+    };
+
+    const setMessage = (text) => {
+        messageElement.textContent = text;
+    }
+
+    const bindEvents = () => {
+        startButton.addEventListener('click', () => {
+            const player1Name = player1Input.value.trim() || 'Player 1';
+            const player2Name = player2Input.value.trim() || 'Player 2';
+            Game.setPlayerNames(player1Name, player2Name);
+            Game.reset();
+        });
+
+        restartButton.addEventListener('click', () => {
+            Game.reset();
+        });
+    };
+
+    return { updateBoard, setMessage, bindEvents };
+
+
+})();
+
+document.addEventListener('DOMContentLoaded', () => {
+    DisplayController.bindEvents();
+    Game.reset();
+});
