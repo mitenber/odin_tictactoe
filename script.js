@@ -53,7 +53,8 @@ const Game = (() => {
             currentPlayer = playerO;
         }
         else { currentPlayer = playerX}
-
+        
+        DisplayController.setMessage(currentPlayer.name + "'s turn " + currentPlayer.marker)
         console.log("Current player: " + currentPlayer.name)
     };
 
@@ -89,17 +90,21 @@ const Game = (() => {
         }
 
         if (Gameboard.placeMarker(position, currentPlayer.marker)) {
+
+            DisplayController.updateBoard();
             console.log(currentPlayer.name + " placed " + currentPlayer.marker + " at position " + position);
             Gameboard.printBoard();
 
             const winner = checkWin();
             if (winner) {
                 console.log(winner.name + " has won!");
+                DisplayController.setMessage(winner.name + " wins!")
                 gameOver = true;
                 return;
             }
 
             if(checkTie()) {
+                DisplayController.setMessage("It's a tie!")
                 console.log("It's a tie!");
                 gameOver = true;
                 return;
@@ -115,11 +120,18 @@ const Game = (() => {
         Gameboard.reset();
         currentPlayer = playerX;
         gameOver = false;
+        DisplayController.updateBoard();
+        DisplayController.setMessage(currentPlayer.name + "'s turn " + currentPlayer.marker)
         console.log("Game has been reset " + playerX.name + " starts with marker " + playerX.marker);
         Gameboard.printBoard();
     };
 
-    return { playTurn, reset, getCurrentPlayer, getPlayerX, getPlayerO }
+    const setPlayerNames = (name1, name2) => {
+        playerX = Player(name1, "X");
+        playerO = Player(name2, "O");
+    }
+
+    return { playTurn, reset, getCurrentPlayer, getPlayerX, getPlayerO, setPlayerNames }
 
 })();
 
@@ -129,7 +141,7 @@ const DisplayController = (() => {
     const player1Input = document.getElementById('player1');
     const player2Input = document.getElementById('player2');
     const startButton = document.getElementById('start-button');
-    const restartButton = document.getElementById('reset-button');
+    const restartButton = document.getElementById('restart-button');
 
     const updateBoard = () => {
         gameboardElement.innerHTML = '';
